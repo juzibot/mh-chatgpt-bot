@@ -7,8 +7,6 @@ import { MiaohuiService } from './miaohui.service';
 
 @Controller('miaohui')
 export class MiaohuiController {
-  private readonly logger = new Logger(MiaohuiController.name)
-
   @Inject()
   private readonly service: MiaohuiService;
 
@@ -17,6 +15,8 @@ export class MiaohuiController {
 
   @Inject()
   private readonly contentSecurityService: ContentSecurityService;
+
+  private readonly logger = new Logger(MiaohuiController.name)
 
   @Post('message')
   @HttpCode(200)
@@ -28,7 +28,11 @@ export class MiaohuiController {
     }
 
     const textPayload = payload as TextPayload
-    const replyMessage = await this.getMessageReply(botId, contactId, textPayload.text);
+    const text = textPayload.text;
+
+    this.logger.log(`Start processing botId: ${botId}, contactId: ${contactId}, message: ${text}`);
+    const replyMessage = await this.getMessageReply(botId, contactId, text);
+    this.logger.log(`Replying to botId: ${botId}, contactId: ${contactId}, message: ${replyMessage}`);
     await this.service.replyTextMessage(token, chatId, replyMessage);
   }
 
