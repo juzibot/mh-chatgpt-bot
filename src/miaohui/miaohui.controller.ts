@@ -21,7 +21,7 @@ export class MiaohuiController {
   @Post('message')
   @HttpCode(200)
   async message (@Body() body: { data: MessageModel }) {
-    const { token, chatId, contactId, botId, type, payload } = body.data;
+    const { token, chatId, contactId, botId, type, payload, roomId } = body.data;
     if (type !== MsgType.Text) {
       this.logger.log(`Skip process message ${MsgType[type]} that is not text type`);
       return;
@@ -33,7 +33,8 @@ export class MiaohuiController {
     this.logger.log(`Start processing botId: ${botId}, contactId: ${contactId}, message: ${text}`);
     const replyMessage = await this.getMessageReply(botId, contactId, text);
     this.logger.log(`Replying to botId: ${botId}, contactId: ${contactId}, message: ${replyMessage}`);
-    await this.service.replyTextMessage(token, chatId, replyMessage);
+    const mention = roomId ? [contactId] : undefined;
+    await this.service.replyTextMessage(token, chatId, replyMessage, mention);
   }
 
   private async getMessageReply (

@@ -11,6 +11,7 @@ export class MiaohuiService {
     token: string,
     chatId: string,
     message: string,
+    mention?: string[],
   ) {
     const endpoint = this.configService.get<string>('miaohuiEndpoint');
     const res = await axios.post(`${endpoint}/message/send`, {
@@ -19,6 +20,7 @@ export class MiaohuiService {
       messageType: 0,
       payload: {
         text: message,
+        mention,
       }
     });
     return res.data;
